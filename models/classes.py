@@ -18,70 +18,70 @@ class Ates1(pygame.sprite.Sprite):
         self.hiz_y = 0 
         self.hareket_hizi = 4
         self.ziplama_gucu = -9
-        self.yercekimi = 0.5
+        self.yer_cekimi = 0.5
         self.havada_mi = True
 
-        def guncelle(self, engeller, merdivenler, su_havuzlari, zehir_havuzlari):
-            self.hiz_x = 0
-            tuslar = pygame.key.get_pressed()
+    def guncelle(self, engeller, merdivenler, su_havuzlari, zehir_havuzlari):
+        self.hiz_x = 0
+        tuslar = pygame.key.get_pressed()
 
-            merdivende_mi = False
-            for merdiven in merdivenler:
-                if self.rect.colliderect(merdiven):
-                    merdivende_mi = True
-                    break
+        merdivende_mi = False
+        for merdiven in merdivenler:
+            if self.rect.colliderect(merdiven):
+                merdivende_mi = True
+                break
             
-            if tuslar[pygame.K_LEFT]:
-                self.hiz_x = -self.hareket_hizi
+        if tuslar[pygame.K_LEFT]:
+            self.hiz_x = -self.hareket_hizi
             
-            if tuslar[pygame.K_RIGHT]:
-                self.hiz_x = self.hareket_hizi
+        if tuslar[pygame.K_RIGHT]:
+            self.hiz_x = self.hareket_hizi
 
-            self.rect.x += self.hiz_x
-            for engel in engeller:
-                if self.rect.colliderect(engel):
-                    if self.hiz_x > 0:
-                        self.rect.right = engel.left
-                    elif self.hiz_x < 0:
-                        self.rect.left = engel.right
-            
-
-            if merdivende_mi:
-                self.havada_mi = False
-                self.hiz_y = 0
-                if tuslar[pygame.K_UP]:
-                    self.hiz_y += self.hareket_hizi
-                elif tuslar[pygame.K_DOWN]:
-                    self.hiz_y -= self.hareket_hizi
-            
-            else:
-                if tuslar[pygame.K_UP] and not self.havada_mi:
-                    self.hiz_y = self.ziplama_gucu
-                    self.havada_mi = True
-
-                self.hiz_y += self.yer_cekimi
-                self.rect.y += self.hiz_y
-
-            self.havada_mi = True
-
-            for engel in engeller:
-                if self.rect.colliderect(engel):
-                    if self.hiz_y >0:
-                        self.rect.bottom = engel.top
-                        self.hiz_y = 0
-                        self.havada_mi = False
-                    elif self.hiz_y < 0:
-                        self.rect.top = engel.bottom 
-                        self.hiz_y = 0
+        self.rect.x += self.hiz_x
+        for engel in engeller:
+            if self.rect.colliderect(engel):
+                if self.hiz_x > 0:
+                    self.rect.right = engel.left
+                elif self.hiz_x < 0:
+                    self.rect.left = engel.right
             
 
-            for su in su_havuzlari:
-                if self.rect.colliderect(su):
-                    self.rect.topleft = (self.baslangic_x, self.baslangic_y)
+        if merdivende_mi:
+            self.havada_mi = False
+            self.hiz_y = 0
+            if tuslar[pygame.K_UP]:
+                self.hiz_y += self.hareket_hizi
+            elif tuslar[pygame.K_DOWN]:
+                self.hiz_y -= self.hareket_hizi
+            
+        else:
+            if tuslar[pygame.K_UP] and not self.havada_mi:
+                self.hiz_y = self.ziplama_gucu
+                self.havada_mi = True
 
-            for zehir in zehir_havuzlari:
-                if self.rect.colliderect(zehir):
-                    self.rect.topleft = (self.baslangic_x, self.baslangic_y)
+            self.hiz_y += self.yer_cekimi
+            self.rect.y += self.hiz_y
+
+        self.havada_mi = True
+
+        for engel in engeller:
+            if self.rect.colliderect(engel):
+                if self.hiz_y >0:
+                    self.rect.bottom = engel.top
+                    self.hiz_y = 0
+                    self.havada_mi = False
+                elif self.hiz_y < 0:
+                    self.rect.top = engel.bottom 
+                    self.hiz_y = 0
+            
+
+        for su in su_havuzlari:
+            if self.rect.colliderect(su):
+                self.rect.topleft = (self.baslangic_x, self.baslangic_y)
+
+        for zehir in zehir_havuzlari:
+            if self.rect.colliderect(zehir):
+                self.rect.topleft = (self.baslangic_x, self.baslangic_y)
 
 class Su1(pygame.sprite.Sprite):
     def __init__(self, x, y):
@@ -97,70 +97,70 @@ class Su1(pygame.sprite.Sprite):
         self.hiz_y = 0 
         self.hareket_hizi = 4
         self.ziplama_gucu = -9
-        self.yercekimi = 0.5
+        self.i = 0.5
         self.havada_mi = True
 
-        def guncelle(self, engeller, merdivenler, su_havuzlari, lav_havuzlari, zehir_havuzlari):
-            self.hiz_x = 0
-            tuslar = pygame.key.get_pressed()
+    def guncelle(self, engeller, merdivenler, su_havuzlari, lav_havuzlari, zehir_havuzlari):
+        self.hiz_x = 0
+        tuslar = pygame.key.get_pressed()
 
-            merdivende_mi = False
-            for merdiven in merdivenler:
-                if self.rect.colliderect(merdiven):
-                    merdivende_mi = True
-                    break
+        merdivende_mi = False
+        for merdiven in merdivenler:
+            if self.rect.colliderect(merdiven):
+                merdivende_mi = True
+                break
             
-            if tuslar[pygame.K_a]:
-                self.hiz_x = -self.hareket_hizi
+        if tuslar[pygame.K_a]:
+            self.hiz_x = -self.hareket_hizi
             
-            if tuslar[pygame.K_d]:
-                self.hiz_x = self.hareket_hizi
+        if tuslar[pygame.K_d]:
+            self.hiz_x = self.hareket_hizi
 
-            self.rect.x += self.hiz_x
-            for engel in engeller:
-                if self.rect.colliderect(engel):
-                    if self.hiz_x > 0:
-                        self.rect.right = engel.left
-                    elif self.hiz_x < 0:
-                        self.rect.left = engel.right
-            
-
-            if merdivende_mi:
-                self.havada_mi = False
-                self.hiz_y = 0
-                if tuslar[pygame.K_w]:
-                    self.hiz_y += self.hareket_hizi
-                elif tuslar[pygame.K_s]:
-                    self.hiz_y -= self.hareket_hizi
-            
-            else:
-                if tuslar[pygame.K_w] and not self.havada_mi:
-                    self.hiz_y = self.ziplama_gucu
-                    self.havada_mi = True
-
-                self.hiz_y += self.yer_cekimi
-                self.rect.y += self.hiz_y
-
-            self.havada_mi = True
-
-            for engel in engeller:
-                if self.rect.colliderect(engel):
-                    if self.hiz_y >0:
-                        self.rect.bottom = engel.top
-                        self.hiz_y = 0
-                        self.havada_mi = False
-                    elif self.hiz_y < 0:
-                        self.rect.top = engel.bottom 
-                        self.hiz_y = 0
+        self.rect.x += self.hiz_x
+        for engel in engeller:
+            if self.rect.colliderect(engel):
+                if self.hiz_x > 0:
+                    self.rect.right = engel.left
+                elif self.hiz_x < 0:
+                    self.rect.left = engel.right
             
 
-            for lav in lav_havuzlari:
-                if self.rect.colliderect(lav):
-                    self.rect.topleft = (self.baslangic_x, self.baslangic_y)
+        if merdivende_mi:
+            self.havada_mi = False
+            self.hiz_y = 0
+            if tuslar[pygame.K_w]:
+                self.hiz_y += self.hareket_hizi
+            elif tuslar[pygame.K_s]:
+                self.hiz_y -= self.hareket_hizi
+            
+        else:
+            if tuslar[pygame.K_w] and not self.havada_mi:
+                self.hiz_y = self.ziplama_gucu
+                self.havada_mi = True
 
-            for zehir in zehir_havuzlari:
-                if self.rect.colliderect(zehir):
-                    self.rect.topleft = (self.baslangic_x, self.baslangic_y)
+            self.hiz_y += self.yer_cekimi
+            self.rect.y += self.hiz_y
+
+        self.havada_mi = True
+
+        for engel in engeller:
+            if self.rect.colliderect(engel):
+                if self.hiz_y >0:
+                    self.rect.bottom = engel.top
+                    self.hiz_y = 0
+                    self.havada_mi = False
+                elif self.hiz_y < 0:
+                    self.rect.top = engel.bottom 
+                    self.hiz_y = 0
+            
+
+        for lav in lav_havuzlari:
+            if self.rect.colliderect(lav):
+                self.rect.topleft = (self.baslangic_x, self.baslangic_y)
+
+        for zehir in zehir_havuzlari:
+            if self.rect.colliderect(zehir):
+                self.rect.topleft = (self.baslangic_x, self.baslangic_y)    
 
 
 

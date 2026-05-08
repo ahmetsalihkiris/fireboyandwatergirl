@@ -195,7 +195,8 @@ def main():
                 harita.merdivenler, 
                 harita.su_havuzlari, 
                 harita.lav_havuzlari, 
-                harita.zehir_havuzlari
+                harita.zehir_havuzlari,
+                
             )
 
             ekran.fill((30, 30, 30)) 
@@ -205,14 +206,6 @@ def main():
             pygame.display.flip()
             saat.tick(60)
 
+
 if __name__ == "__main__":
-    try:
-        main()
-    except Exception as e:
-        # EĞER OYUN ÇÖKERSE BURASI DEVREYE GİRECEK
-        print("\n" + "="*50)
-        print("🚨 OYUN ÇÖKTÜ! İŞTE HATA RAPORU:")
-        print("="*50)
-        traceback.print_exc()  # Hatayı zorla ekrana yazdırır
-        print("="*50)
-        input("Terminalin kapanmaması için Enter'a basın...") # Ekranı açık tutar
+    main()
