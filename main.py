@@ -152,8 +152,8 @@ def main():
 
     # Haritayı ve oyuncuları yüklüyoruz
     harita = CSVHarita()
-    ates = Ates1(50, 60)
-    su = Su1(100, 55)
+    ates = Ates1(50, 605)
+    su = Su1(100, 555)
     oyuncular = pygame.sprite.Group(ates, su)
 
     durum = "MENU"
