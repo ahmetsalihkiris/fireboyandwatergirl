@@ -1,211 +1,88 @@
-"""import pygame
-import sys 
-from models.classes import Ates1,Su1,CSVHarita
-from models.arayuz import Buton
+import pygame
+import sys
+from states.menu import Menu
+from states.game import Oyun
+from states.seviye_secim import seviye_secim
+from models.muzik import ses_motoru
 
-def main():
-    pygame.init()
-    # İstediğin ekran boyutu
-    ekran = pygame.display.set_mode((810, 630))
-    pygame.display.set_caption("Ateş ve Su - CSV Test")
-    saat = pygame.time.Clock()
 
-    # Haritayı yükle (Dosya adının doğru olduğundan emin ol)
-    try:
-        arkaplan = pygame.image.load("b.jpg")
-        arkaplan = pygame.transform.scale(arkaplan,(810,630))
-    except:
-        arkaplan = pygame.Surface((810, 630))
-        arkaplan.fill((20, 20, 20))
-        print("Harita bulunamadı! CSV dosyalarını ve Tileset'i kontrol et.")
+class Kontrol:
+    def __init__(self):
+        pygame.init()
+
+        ses_motoru.baslat()
+        ses_motoru.menu_muzigini_cal()
+
+        self.tam_ekran_mi = False
+        self.ekran = pygame.display.set_mode((810, 630))
+        pygame.display.set_caption("Ateş ve Su")
+        self.clock = pygame.time.Clock()
+        
+        self.states = {
+            "MENU": Menu(),
+            "LEVEL_SELECT": seviye_secim(),
+            "GAME": Oyun(seviye=1),
+
+        }
+        self.state = self.states["MENU"]
+
+    def change_state(self):
+        next_state_name = self.state.next_state
+        self.state.done = False 
+        
+        if next_state_name == "GAME":
+            
+            if hasattr(self.state, 'secilen_seviye'):
+                hedef_seviye = self.state.secilen_seviye
+            else:
+                hedef_seviye = 1 
+                
+            self.states["GAME"] = Oyun(seviye=hedef_seviye) 
+            
+            ses_motoru.oyun_muzigini_cal()
+        
+        elif next_state_name == "MENU":
+            ses_motoru.menu_muzigini_cal()
+            
+        self.state = self.states[next_state_name]    
+
+    def run(self):
+        while True:
+            events = pygame.event.get()
+            
+            for event in events:
+                if event.type == pygame.QUIT:
+                    self.quit_game()
+                if event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_q:
+                        print("Q tuşuna basıldı! Kapatılıyor...")
+                        self.quit_game()
     
-    harita = CSVHarita()
-
-    # Oyuncular (Haritada boş bir yere koy)
-    ates = Ates1(50, 50)
-    su = Su1(100, 50)
-    oyuncular = pygame.sprite.Group(ates, su)
-
+                    if event.key == pygame.K_RETURN and (pygame.key.get_mods() & pygame.KMOD_ALT):
+                        self.tam_ekran_mi = not self.tam_ekran_mi
+                        if self.tam_ekran_mi:
+                            self.ekran = pygame.display.set_mode((810, 630), pygame.FULLSCREEN | pygame.SCALED)
+                        else:
+                            self.ekran = pygame.display.set_mode((810, 630))
 
   
+            if self.state.quit:
+                self.quit_game()
 
-    durum = "MENU"
+            if self.state.done:
+                self.change_state()
 
-    font = pygame.font.SysFont(None, 48)
-
-    basla_butonu = Buton("Başla", 305, 250, 200, 80, font)
-    cikis_butonu = Buton("Çıkış", 305, 350, 200, 80, font)
-
-
-    while True:
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                pygame.quit()
-                sys.exit()
-
-        if durum == "MENU":
-            if basla_butonu.tiklandi_mi(event):
-                durum = "OYUN"
-            elif cikis_butonu.tiklandi_mi(event):
-                pygame.quit()
-                sys.exit()
-        
-        if durum  == "MENU":
-            #ekran.fill((20, 20, 20))
-            oyun_basligi = font.render("ATEŞ VE SU", True, (255, 215, 0))
-            baslik_rect = oyun_basligi.get_rect(center=(400, 100))
-            ekran.blit(arkaplan,(0,0))
-            ekran.blit(oyun_basligi, baslik_rect)
+            self.state.handle_events(events)
+            self.state.update()
+            self.state.draw(self.ekran)
             
-            basla_butonu.ciz(ekran)
-            cikis_butonu.ciz(ekran)
             pygame.display.flip()
-            saat.tick(60)
-            
-        elif durum == "OYUN":
-            # Güncelleme
-            oyuncular.update(
-                harita.engeller,
-                harita.merdivenler,
-                harita.su_havuzlari,
-                harita.lav_havuzlari,
-                harita.zehir_havuzlari
-            )
+            self.clock.tick(60)
 
-        # Çizim
-            ekran.fill((20, 20, 20)) # Arka plan
-            harita.ciz_prototip(ekran)
-            oyuncular.draw(ekran)
-
-            pygame.display.flip()
-            saat.tick(60)
-    while True:
-        # 1. OLAY (EVENT) DÖNGÜSÜ
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                pygame.quit()
-                sys.exit()
-
-            # DİKKAT: Tıklama kontrolleri artık bu 'for' döngüsünün İÇİNDE!
-            if durum == "MENU":
-                if basla_butonu.tiklandi_mi(event):
-                    durum = "OYUN"
-                elif cikis_butonu.tiklandi_mi(event):
-                    pygame.quit()
-                    sys.exit()
-        
-        # 2. ÇİZİM VE GÜNCELLEME DÖNGÜSÜ (For döngüsünün dışında)
-        if durum == "MENU":
-            ekran.blit(arkaplan, (0,0))
-            oyun_basligi = font.render("ATEŞ VE SU", True, (255, 215, 0))
-            baslik_rect = oyun_basligi.get_rect(center=(400, 100))
-            ekran.blit(oyun_basligi, baslik_rect)
-            
-            basla_butonu.ciz(ekran)
-            cikis_butonu.ciz(ekran)
-            pygame.display.flip()
-            saat.tick(60)
-            
-        elif durum == "OYUN":
-            # Güncelleme
-            oyuncular.update(
-                harita.engeller, 
-                harita.merdivenler, 
-                harita.su_havuzlari, 
-                harita.lav_havuzlari, 
-                harita.zehir_havuzlari
-            )
-
-            # Çizim
-            ekran.fill((30, 30, 30)) 
-            harita.ciz_prototip(ekran) 
-            oyuncular.draw(ekran)
-
-            pygame.display.flip()
-            saat.tick(60)
-
+    def quit_game(self):
+        pygame.quit()
+        sys.exit()
 
 if __name__ == "__main__":
-    main()"""
-
-import pygame
-import sys 
-from models.classes import Ates1, Su1, CSVHarita
-from models.arayuz import Buton
-import traceback
-
-def main():
-    pygame.init()
-    ekran = pygame.display.set_mode((810, 630))
-    pygame.display.set_caption("Ateş ve Su - CSV Prototip Debug")
-    saat = pygame.time.Clock()
-
-    # --- DEBUG 1: Arka Plan Kontrolü ---
-    try:
-        arkaplan = pygame.image.load("b.jpg")
-        arkaplan = pygame.transform.scale(arkaplan, (810, 630))
-        print("SİSTEM: Arka plan resmi (b.jpg) başarıyla yüklendi.")
-    except Exception as e:
-        arkaplan = pygame.Surface((810, 630))
-        arkaplan.fill((20, 20, 20))
-        print(f"HATA: b.jpg yüklenemedi! Dosya ana klasörde mi? Detay: {e}")
-
-    # Haritayı ve oyuncuları yüklüyoruz
-    harita = CSVHarita()
-    ates = Ates1(50, 605)
-    su = Su1(100, 555)
-    oyuncular = pygame.sprite.Group(ates, su)
-
-    durum = "MENU"
-    font = pygame.font.SysFont(None, 48)
-
-    basla_butonu = Buton("Başla", 305, 250, 200, 80, font)
-    cikis_butonu = Buton("Çıkış", 305, 350, 200, 80, font)
-
-    while True:
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                pygame.quit()
-                sys.exit()
-
-            if durum == "MENU":
-                # --- DEBUG 2: Buton Tıklama Kontrolü ---
-                if basla_butonu.tiklandi_mi(event):
-                    print("SİSTEM: 'Başla' butonuna tıklandı! Oyun sahnesine geçiliyor...")
-                    durum = "OYUN"
-                elif cikis_butonu.tiklandi_mi(event):
-                    print("SİSTEM: 'Çıkış' butonuna tıklandı! Kapatılıyor...")
-                    pygame.quit()
-                    sys.exit()
-        
-        if durum == "MENU":
-            ekran.blit(arkaplan, (0,0))
-            oyun_basligi = font.render("ATEŞ VE SU", True, (255, 215, 0))
-            baslik_rect = oyun_basligi.get_rect(center=(400, 100))
-            ekran.blit(oyun_basligi, baslik_rect)
-            
-            basla_butonu.ciz(ekran)
-            cikis_butonu.ciz(ekran)
-            pygame.display.flip()
-            saat.tick(60)
-            
-        elif durum == "OYUN":
-            oyuncular.update(
-                harita.engeller, 
-                harita.merdivenler, 
-                harita.su_havuzlari, 
-                harita.lav_havuzlari, 
-                harita.zehir_havuzlari,
-                
-            )
-
-            ekran.fill((30, 30, 30)) 
-            harita.ciz(ekran) 
-            oyuncular.draw(ekran)
-
-            pygame.display.flip()
-            saat.tick(60)
-
-
-if __name__ == "__main__":
-    main()
+    app = Kontrol()
+    app.run()
